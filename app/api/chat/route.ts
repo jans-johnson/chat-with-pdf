@@ -14,7 +14,6 @@ import { VALID_MODELS } from "@/constants/models";
 import { logger } from "@lib/logger";
 import { eq } from "drizzle-orm";
 
-export const runtime = "edge";
 
 function validateModel(selectedModel?: string): string | undefined {
   if (!selectedModel) return undefined;

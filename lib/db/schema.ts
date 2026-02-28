@@ -1,104 +1,121 @@
+import { randomUUID } from "crypto";
 import {
-  boolean,
   integer,
-  json,
-  pgEnum,
-  pgTable,
+  sqliteTable,
   text,
-  timestamp,
-  uuid,
-  varchar,
-} from "drizzle-orm/pg-core";
+} from "drizzle-orm/sqlite-core";
 
-export const users = pgTable("users", {
-  id: varchar("id", { length: 256 }).primaryKey(),
+export const users = sqliteTable("users", {
+  id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
 });
 export type User = typeof users.$inferSelect;
 export type SafeUser = Omit<User, "createdAt"> & {
   createdAt: string;
 };
 
-export const user_settings = pgTable("user_settings", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: varchar("user_id", { length: 256 })
+export const user_settings = sqliteTable("user_settings", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => randomUUID()),
+  userId: text("user_id")
     .notNull()
     .references(() => users.id),
   messageCount: integer("message_count").notNull().default(0),
   freeChats: integer("free_chats"),
   freeMessages: integer("free_messages"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
 });
 export type UserSettings = typeof user_settings.$inferSelect;
 
-export const userSystemEnum = pgEnum("user_system_enum", ["system", "user"]);
-
-export const chats = pgTable("chats", {
-  id: uuid("id").defaultRandom().primaryKey(),
+export const chats = sqliteTable("chats", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => randomUUID()),
   pdfName: text("pdf_name").notNull(),
   pdfUrl: text("pdf_url").notNull(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  userId: varchar("user_id", { length: 256 }).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  userId: text("user_id").notNull(),
   fileKey: text("file_key").notNull(),
 });
 export type SafeChat = Omit<typeof chats.$inferSelect, "createdAt"> & {
   createdAt: string;
 };
 
-export const messages = pgTable("messages", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  chatId: uuid("chat_id")
+export const messages = sqliteTable("messages", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => randomUUID()),
+  chatId: text("chat_id")
     .references(() => chats.id)
     .notNull(),
   content: text("content").notNull(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  role: userSystemEnum("role").notNull(),
-  model: varchar("model", { length: 256 }),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  role: text("role", { enum: ["system", "user"] }).notNull(),
+  model: text("model"),
 });
 export type Message = typeof messages.$inferSelect;
 export type SafeMessage = Omit<Message, "createdAt"> & {
   createdAt: string;
 };
 
-export const subscriptions = pgTable("subscriptions", {
-  id: uuid("id").defaultRandom().notNull(),
-  userId: varchar("user_id", { length: 256 }).notNull().unique(),
-  stripeCustomerId: varchar("stripe_customer_id", { length: 256 })
+export const subscriptions = sqliteTable("subscriptions", {
+  id: text("id")
     .notNull()
-    .unique(),
-  stripeSubscriptionId: varchar("stripe_subscription_id", {
-    length: 256,
-  }).unique(),
-  stripePriceId: varchar("stripe_price_id", { length: 256 }),
-  stripeCurrentPeriodEnd: timestamp("stripe_current_period_end"),
+    .$defaultFn(() => randomUUID()),
+  userId: text("user_id").notNull().unique(),
+  stripeCustomerId: text("stripe_customer_id").notNull().unique(),
+  stripeSubscriptionId: text("stripe_subscription_id").unique(),
+  stripePriceId: text("stripe_price_id"),
+  stripeCurrentPeriodEnd: integer("stripe_current_period_end", {
+    mode: "timestamp",
+  }),
 });
 
-export const sources = pgTable("sources", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  messageId: uuid("message_id")
+export const sources = sqliteTable("sources", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => randomUUID()),
+  messageId: text("message_id")
     .references(() => messages.id)
     .notNull(),
-  chatId: uuid("chat_id")
+  chatId: text("chat_id")
     .references(() => chats.id)
     .notNull(),
-  data: json("data").notNull(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
+  data: text("data"),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
 });
 export type SafeSource = Omit<typeof sources.$inferSelect, "createdAt"> & {
   createdAt: string;
 };
 
-export const feature_flags = pgTable("feature_flags", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  flag: varchar("flag", { length: 256 }).notNull(),
-  enabled: boolean("enabled").default(false),
+export const feature_flags = sqliteTable("feature_flags", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => randomUUID()),
+  flag: text("flag").notNull(),
+  enabled: integer("enabled", { mode: "boolean" }).default(false),
 });
 
-export const app_settings = pgTable("app_settings", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  name: varchar("name", { length: 256 }).notNull(),
+export const app_settings = sqliteTable("app_settings", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => randomUUID()),
+  name: text("name").notNull(),
   value: text("value").notNull(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
 });

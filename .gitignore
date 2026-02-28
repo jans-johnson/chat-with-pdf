@@ -36,3 +36,9 @@ next-env.d.ts
 
 # Sentry Config File
 .env.sentry-build-plugin
+.claude/settings.local.json
+
+# SQLite
+sqlite.db
+sqlite.db-wal
+sqlite.db-shm

@@ -6,7 +6,7 @@ A chat application which focuses on information retrieval by answering questions
 
 - **FE & BE**: Next.js 14, React, TypeScript, Tailwind CSS
 - **AI & ML**: OpenAI, LangChain, Vercel AI SDK
-- **Database**: NeonDB (PostgreSQL), Drizzle ORM
+- **Database**: SQLite (local), Drizzle ORM
 - **Vector Database**: Pinecone
 - **File Storage**: AWS S3
 - **Authentication**: Clerk Auth
@@ -78,7 +78,6 @@ graph TD
 ### Prerequisites
 
 - Node.js 18+ or Bun runtime
-- PostgreSQL database (NeonDB recommended)
 - AWS S3 bucket
 - Pinecone account
 - OpenAI API key
