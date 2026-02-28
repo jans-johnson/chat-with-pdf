@@ -1,11 +1,11 @@
 "use client";
 
 import axios from "axios";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useCallback, useEffect, useRef, useState } from "react";
 import { useChat } from "ai/react";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, CornerDownRight } from "lucide-react";
-import { SafeChat, messages } from "@/lib/db/schema";
+import { Loader2, CornerDownRight, Plus } from "lucide-react";
+import { SafeChat, SafeChatFile } from "@/lib/db/schema";
 import { Button } from "./ui/button";
 import MessageList from "./messages/message-list";
 import { Textarea } from "./ui/textarea";
@@ -14,9 +14,10 @@ import ModelSelector from "./model-selector";
 import { useAppStore } from "@store/app-store";
 import { useDbEvents } from "@providers/db-events-provider";
 import toast from "react-hot-toast";
+import type { ChatWithFiles } from "@/app/chat/[[...chatId]]/_actions/chat";
 
 interface ChatInterfaceProps {
-  currentChat: SafeChat;
+  currentChat: ChatWithFiles;
 }
 
 const ChatInterface: FunctionComponent<ChatInterfaceProps> = ({
@@ -36,6 +37,11 @@ const ChatInterface: FunctionComponent<ChatInterfaceProps> = ({
   } = useAppStore();
 
   const messageLimit = freeMessages || Number(settings?.free_messages);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isAddingFile, setIsAddingFile] = useState(false);
+  const [chatFiles, setChatFiles] = useState<SafeChatFile[]>(
+    currentChat.files || []
+  );
 
   const query = useQuery({
     queryKey: ["chat", chatId],
@@ -59,7 +65,6 @@ const ChatInterface: FunctionComponent<ChatInterfaceProps> = ({
   const { messages, input, isLoading, handleInputChange, handleSubmit } =
     useChat({
       body: {
-        fileKey: currentChat.fileKey,
         chatId,
         messageCount,
         isAdmin,
@@ -129,17 +134,57 @@ const ChatInterface: FunctionComponent<ChatInterfaceProps> = ({
     }
   }, [query.data?.messages]);
 
-  // useEffect(() => {
-  //   if (query.data?.sources) {
-  //     const msgSources = query.data?.sources
-  //       ? (query.data?.sources as SafeSource[]).reduce(
-  //           (a, v) => ({ ...a, [v.messageId]: v.data }),
-  //           {}
-  //         )
-  //       : {};
-  //     setSourcesForMessages(msgSources);
-  //   }
-  // }, [query.data?.sources]);
+  const handleAddFile = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 50 * 1024 * 1024) {
+      toast.error("File too large (max 50MB)");
+      return;
+    }
+
+    if (file.type !== "application/pdf") {
+      toast.error("Only PDF files are supported");
+      return;
+    }
+
+    try {
+      setIsAddingFile(true);
+
+      // Upload the file
+      const formData = new FormData();
+      formData.append("file", file);
+      const uploadRes = await fetch("/api/upload-file", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!uploadRes.ok) {
+        toast.error("Failed to upload file");
+        return;
+      }
+
+      const uploadData = await uploadRes.json();
+
+      // Add file to chat
+      const addRes = await axios.post("/api/add-file-to-chat", {
+        chatId,
+        file_key: uploadData.file_key,
+        file_name: uploadData.file_name,
+      });
+
+      setChatFiles(addRes.data.files);
+      toast.success(`Added "${uploadData.file_name}" to chat`);
+    } catch (error) {
+      toast.error("Error adding file to chat");
+    } finally {
+      setIsAddingFile(false);
+      // Reset the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  }, [chatId]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     if (isUsageRestricted && messageCount === messageLimit) {
@@ -168,7 +213,7 @@ const ChatInterface: FunctionComponent<ChatInterfaceProps> = ({
           // sources={sourcesForMessages}
           models={modelForMessages}
           chatId={chatId}
-          pdfName={currentChat.pdfName}
+          pdfName={currentChat.pdfName || currentChat.files?.[0]?.fileName || "PDF"}
         />
         <form
           className={`flex gap-3 bg-neutral-50 dark:bg-[#0a0a0a] px-3 pt-1 pb-5`}
@@ -185,10 +230,35 @@ const ChatInterface: FunctionComponent<ChatInterfaceProps> = ({
               onKeyDown={onKeyDown}
               className="pt-2.5 border-none resize-none bg-transparent"
             />
-            {/* Bottom row with model selector and send button */}
+            {/* Bottom row with model selector, add file, and send button */}
             <div className="flex items-center justify-between w-full pb-2">
-              {/* Model selector on the left */}
-              <ModelSelector className="ml-3" />
+              {/* Left side: model selector and add file */}
+              <div className="flex items-center gap-1">
+                <ModelSelector className="ml-3" />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf"
+                  className="hidden"
+                  onChange={handleAddFile}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  disabled={isAddingFile || isLoading}
+                  onClick={() => fileInputRef.current?.click()}
+                  className="gap-1 font-light text-[12px] text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-400 hover:bg-transparent"
+                  title="Add PDF to chat"
+                >
+                  {isAddingFile ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <Plus size={14} />
+                  )}
+                  Add file
+                </Button>
+              </div>
 
               {/* Send button on the right */}
               <Button

@@ -23,7 +23,15 @@ const Header = () => {
           width={160}
           height={44}
           priority={false}
-          className="w-[140px] h-auto"
+          className="w-[140px] h-auto hidden dark:block"
+        />
+        <Image
+          src="/pdfwizard-logo-dark.svg"
+          alt="PdfWizard Logo"
+          width={160}
+          height={44}
+          priority={false}
+          className="w-[140px] h-auto block dark:hidden"
         />
       </Link>
 

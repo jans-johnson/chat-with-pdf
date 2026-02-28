@@ -38,15 +38,36 @@ export const chats = sqliteTable("chats", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => randomUUID()),
-  pdfName: text("pdf_name").notNull(),
-  pdfUrl: text("pdf_url").notNull(),
+  pdfName: text("pdf_name"),
+  pdfUrl: text("pdf_url"),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date()),
   userId: text("user_id").notNull(),
-  fileKey: text("file_key").notNull(),
+  fileKey: text("file_key"),
 });
-export type SafeChat = Omit<typeof chats.$inferSelect, "createdAt"> & {
+export type Chat = typeof chats.$inferSelect;
+export type SafeChat = Omit<Chat, "createdAt"> & {
+  createdAt: string;
+};
+
+export const chat_files = sqliteTable("chat_files", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => randomUUID()),
+  chatId: text("chat_id")
+    .references(() => chats.id)
+    .notNull(),
+  fileKey: text("file_key").notNull(),
+  fileName: text("file_name").notNull(),
+  fileUrl: text("file_url").notNull(),
+  fileSize: integer("file_size"),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});
+export type ChatFile = typeof chat_files.$inferSelect;
+export type SafeChatFile = Omit<ChatFile, "createdAt"> & {
   createdAt: string;
 };
 

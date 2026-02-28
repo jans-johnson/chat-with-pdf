@@ -36,7 +36,7 @@ type RecordMetadata = {
   preview: string;
 };
 
-export async function loadFileIntoPinecone(fileKey: string) {
+export async function loadFileIntoPinecone(fileKey: string, chatId: string) {
   try {
     // 1. obtain the pdf from local storage
     logger.debug("Loading local file into pinecone");
@@ -73,9 +73,9 @@ export async function loadFileIntoPinecone(fileKey: string) {
       (vector): vector is PineconeRecord<RecordMetadata> => vector !== null
     );
 
-    // 4. upload to pinecone
+    // 4. upload to pinecone using chatId as namespace
     const client = await getPineconeClient();
-    const pineconeIndex = client.index("askpdf").namespace(fileKey);
+    const pineconeIndex = client.index("askpdf").namespace(chatId);
 
     logger.debug("Inserting vectors into pinecone");
 
@@ -133,10 +133,10 @@ export function truncateStringByByte(str: string, bytes: number) {
   return new TextDecoder("utf-8").decode(enc.encode(str).slice(0, bytes));
 }
 
-export async function deleteVectors(fileKey: string) {
+export async function deleteVectors(fileKey: string, namespace: string) {
   try {
     const client = await getPineconeClient();
-    const index = client.index("askpdf").namespace(fileKey);
+    const index = client.index("askpdf").namespace(namespace);
     const prefix = fileKey + "#";
 
     const pageOneList = await index.listPaginated({ prefix });
@@ -162,6 +162,21 @@ export async function deleteVectors(fileKey: string) {
   } catch (err) {
     logger.error("Error deleting vectors:", {
       fileKey,
+      error: err,
+    });
+    throw err;
+  }
+}
+
+export async function deleteAllVectorsForChat(chatId: string) {
+  try {
+    const client = await getPineconeClient();
+    const index = client.index("askpdf");
+    await index.namespace(chatId).deleteAll();
+    logger.debug("Success deleting all vectors for chat", chatId);
+  } catch (err) {
+    logger.error("Error deleting all vectors for chat:", {
+      chatId,
       error: err,
     });
     throw err;

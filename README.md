@@ -1,5 +1,7 @@
 # Chat with PDF
 
+![Chat with PDF Screenshot](public/demo.png)
+
 A chat application which focuses on information retrieval by answering questions related to the provided PDF documents. The app utilises LangChain and retrieval-augmented-generation (RAG) to generate responses that are deeply informed by the content within the PDFs as well as the context of the chat history. Supports multiple AI providers including OpenAI, Anthropic, Google, and DeepSeek.
 
 ## Tech Stack

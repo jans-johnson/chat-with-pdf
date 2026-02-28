@@ -8,7 +8,7 @@
   <!-- Sparkle -->
   <path d="M30 8L31 11L34 12L31 13L30 16L29 13L26 12L29 11L30 8Z" fill="#34d399" opacity="0.7"/>
   <!-- Text: PdfWizard -->
-  <text x="42" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="600" fill="currentColor">
-    <tspan fill="#10b981">Pdf</tspan><tspan fill="white">Wizard</tspan>
+  <text x="42" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="600">
+    <tspan fill="#10b981">Pdf</tspan><tspan fill="#171717">Wizard</tspan>
   </text>
 </svg>

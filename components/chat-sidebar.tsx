@@ -38,7 +38,6 @@ const ChatSideBar = ({}: ChatSideBarProps) => {
     mutationFn: async (chat: SafeChat) => {
       const response = await axios.post("/api/remove-messages", {
         chatId: chat.id,
-        fileKey: chat.fileKey,
       });
       return response.data;
     },

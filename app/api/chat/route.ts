@@ -3,6 +3,8 @@ import {
   messages as _messages,
   sources as _sources,
   user_settings,
+  chat_files,
+  chats,
 } from "@/lib/db/schema";
 import { retrieval } from "@/lib/langchain";
 import { getUserSettings, updateUserSettings, getDefaultUserId } from "@lib/account";
@@ -33,7 +35,6 @@ export async function POST(req: Request) {
 
     const {
       messages,
-      fileKey,
       chatId,
       messageCount,
       isAdmin,
@@ -54,6 +55,22 @@ export async function POST(req: Request) {
       );
     }
 
+    // Determine the Pinecone namespace: use chatId if chat_files exist, else fall back to chats.fileKey
+    const chatFilesRows = await db
+      .select()
+      .from(chat_files)
+      .where(eq(chat_files.chatId, chatId));
+    let namespace: string;
+    if (chatFilesRows.length > 0) {
+      namespace = chatId;
+    } else {
+      const chat = await db
+        .select()
+        .from(chats)
+        .where(eq(chats.id, chatId));
+      namespace = chat[0]?.fileKey || chatId;
+    }
+
     const currentMessageContent = messages[messages.length - 1].content;
     const previousMessages = messages.slice(0, -1);
     const chatHistory = formatMessages(previousMessages);
@@ -71,7 +88,7 @@ export async function POST(req: Request) {
       question: currentMessageContent,
       chatHistory,
       previousMessages,
-      fileKey,
+      namespace,
       isAdmin,
       selectedModel: validatedModel,
       apiKeys,

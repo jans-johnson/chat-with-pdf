@@ -1,11 +1,10 @@
 import { Pinecone } from "@pinecone-database/pinecone";
 import { getEmbeddings } from "./embeddings";
-import { convertToAscii } from "./utils";
 import { logger } from "./logger";
 
 export async function getMatchesFromEmbeddings(
   embeddings: number[],
-  fileKey: string
+  namespace: string
 ) {
   const pinecone = new Pinecone({
     apiKey: process.env.PINECONE_API_KEY!,
@@ -13,11 +12,10 @@ export async function getMatchesFromEmbeddings(
   const index = await pinecone.Index("askpdf");
 
   try {
-    const queryResult = await index.query({
+    const queryResult = await index.namespace(namespace).query({
       topK: 10, // Increase to get more candidates
       vector: embeddings,
       filter: {
-        fileKey: { $eq: convertToAscii(fileKey) },
         // Filter out very short chunks
         chunkLength: { $gte: 50 },
       },
@@ -32,9 +30,9 @@ export async function getMatchesFromEmbeddings(
   }
 }
 
-export async function getContext(query: string, fileKey: string) {
+export async function getContext(query: string, namespace: string) {
   const queryEmbeddings = await getEmbeddings(query.trim());
-  const matches = await getMatchesFromEmbeddings(queryEmbeddings, fileKey);
+  const matches = await getMatchesFromEmbeddings(queryEmbeddings, namespace);
 
   // Improved filtering with adaptive threshold and quality checks
   const qualifyingDocs = matches

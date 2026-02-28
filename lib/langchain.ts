@@ -196,7 +196,7 @@ type retrievalArgs = {
   question: string;
   chatHistory: string;
   previousMessages: string[];
-  fileKey: string;
+  namespace: string;
   isAdmin: boolean;
   selectedModel?: string;
   apiKeys?: ApiKeys;
@@ -215,14 +215,14 @@ export async function retrieval({
   question,
   chatHistory,
   previousMessages,
-  fileKey,
+  namespace,
   isAdmin,
   selectedModel,
   apiKeys,
   streamCallbacks,
 }: retrievalArgs) {
   const sanitizedQuestion = question.trim().replaceAll("\n", " ");
-  const vectorstore = getVectorStore(fileKey);
+  const vectorstore = getVectorStore(namespace);
   const messageCount = previousMessages.length;
 
   /**
@@ -313,7 +313,7 @@ export async function retrieval({
   });
 }
 
-function getVectorStore(fileKey: string) {
+function getVectorStore(namespace: string) {
   try {
     // Use the same embedding model as in indexing for consistency
     const embeddings = new OpenAIEmbeddings({
@@ -326,7 +326,7 @@ function getVectorStore(fileKey: string) {
 
     const vectorStore = new PineconeStore(embeddings, {
       pineconeIndex,
-      namespace: fileKey,
+      namespace,
     });
 
     return vectorStore;

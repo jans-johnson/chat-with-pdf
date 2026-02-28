@@ -17,7 +17,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
     <>
       {currentChat ? (
         <>
-          <PdfViewer pdfUrl={currentChat.pdfUrl} />
+          <PdfViewer files={currentChat.files} />
           <ChatInterface currentChat={currentChat} />
         </>
       ) : (

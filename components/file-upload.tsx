@@ -23,71 +23,85 @@ const FileUpload = () => {
   const chatLimit = freeChats || Number(settings?.free_chats);
 
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string>("");
   const [showLimitDialog, setShowLimitDialog] = useState(false);
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async ({
-      file_key,
-      file_name,
-    }: {
-      file_key: string;
-      file_name: string;
-    }) => {
-      const response = await axios.post("/api/create-chat", {
-        file_key,
-        file_name,
-      });
+    mutationFn: async (files: { file_key: string; file_name: string }[]) => {
+      const response = await axios.post("/api/create-chat", { files });
       return response.data;
     },
   });
 
   const onDrop = useCallback(
-    async (acceptedFiles: any) => {
+    async (acceptedFiles: File[]) => {
       if (isUsageRestricted && fileCount === chatLimit) {
         setShowLimitDialog(true);
         return;
       }
 
-      const file = acceptedFiles[0];
-      if (file.size > 5 * 1024 * 1024) {
-        // bigger than 5mb
-        toast.error("File too large");
-        return;
-      } else {
-        try {
-          setIsUploading(true);
+      // Validate all files
+      for (const file of acceptedFiles) {
+        if (file.size > 50 * 1024 * 1024) {
+          toast.error(`File "${file.name}" is too large (max 50MB)`);
+          return;
+        }
+      }
+
+      try {
+        setIsUploading(true);
+        const uploadedFiles: { file_key: string; file_name: string }[] = [];
+
+        // Upload each file sequentially
+        for (let i = 0; i < acceptedFiles.length; i++) {
+          const file = acceptedFiles[i];
+          setUploadProgress(
+            `Uploading file ${i + 1} of ${acceptedFiles.length}: ${file.name}`
+          );
+
           const formData = new FormData();
           formData.append("file", file);
           const res = await fetch("/api/upload-file", {
             method: "POST",
             body: formData,
           });
+
           if (!res.ok) {
-            toast.error("Something went wrong");
+            toast.error(`Failed to upload "${file.name}"`);
             return;
           }
+
           const data = await res.json();
           if (!data?.file_key || !data.file_name) {
-            toast.error("Something went wrong");
+            toast.error(`Failed to upload "${file.name}"`);
             return;
           }
-          mutate(data, {
-            onSuccess: ({ chat }: { chat: SafeChat }) => {
-              toast.success("Uploaded file successfully");
-              addChat(chat);
-              router.push(`/chat/${chat.id}`);
-            },
-            onError: () => {
-              toast.error("Error creating chat");
-            },
+
+          uploadedFiles.push({
+            file_key: data.file_key,
+            file_name: data.file_name,
           });
-        } catch (error) {
-          logger.error("Error uploading file:", {
-            error,
-          });
-        } finally {
-          setIsUploading(false);
         }
+
+        setUploadProgress("Creating chat and indexing files...");
+
+        mutate(uploadedFiles, {
+          onSuccess: ({ chat }: { chat: SafeChat }) => {
+            toast.success("Uploaded file(s) successfully");
+            addChat(chat);
+            router.push(`/chat/${chat.id}`);
+          },
+          onError: () => {
+            toast.error("Error creating chat");
+          },
+        });
+      } catch (error) {
+        logger.error("Error uploading file:", {
+          error,
+        });
+      } finally {
+        setIsUploading(false);
+        setUploadProgress("");
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -98,7 +112,6 @@ const FileUpload = () => {
     accept: {
       "application/pdf": [".pdf"],
     },
-    maxFiles: 1,
     disabled: isPending || isUploading,
     onDrop,
   });
@@ -121,7 +134,7 @@ const FileUpload = () => {
           <>
             <FileUploadIcon size={85} />
             <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-300 mt-4">
-              Spilling tea to AI...
+              {uploadProgress || "Spilling tea to AI..."}
             </p>
           </>
         ) : (
@@ -134,15 +147,15 @@ const FileUpload = () => {
             />
             <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-300 mt-4">
               {isDragActive
-                ? "Drop your file here"
-                : "Drag and drop your file here or click to select file"}
+                ? "Drop your files here"
+                : "Drag and drop your files here or click to select files"}
             </p>
             <div className="flex gap-2 mt-2 text-sm">
               <p className="text-neutral-400 dark:text-neutral-500 border-r-2 border-neutral-300 dark:border-white/10 pr-2">
                 Supported file types: PDF
               </p>
               <p className="text-neutral-400 dark:text-neutral-500">
-                Max file size: 5MB
+                Max file size: 50MB
               </p>
             </div>
           </>

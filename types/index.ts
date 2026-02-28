@@ -1,3 +1,5 @@
+export type { SafeChatFile } from "@/lib/db/schema";
+
 export enum FeatureFlags {
   Billing = "billing",
 }
