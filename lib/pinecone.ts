@@ -79,6 +79,10 @@ export async function loadFileIntoPinecone(fileKey: string) {
 
     logger.debug("Inserting vectors into pinecone");
 
+    if (vectors.length === 0) {
+      throw new Error("No meaningful content could be extracted from the PDF");
+    }
+
     await pineconeIndex.upsert(vectors);
 
     logger.debug("Success inserting vectors to pinecone");
