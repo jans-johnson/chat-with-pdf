@@ -240,6 +240,7 @@ export async function retrieval({
   });
 
   const retriever = vectorstore.asRetriever({
+    k: 8,
     callbacks: [
       {
         handleRetrieverEnd(documents) {
@@ -293,7 +294,7 @@ export async function retrieval({
     return decoder.decode(encoder.encode(content).slice(0, maxBytes));
   };
 
-  const limitedDocuments = documents.slice(0, 5); // Limit to 5 documents max
+  const limitedDocuments = documents.slice(0, 8); // Limit to 8 documents for multi-file support
   const serializedSources = Buffer.from(
     JSON.stringify(
       limitedDocuments.map((doc) => {
