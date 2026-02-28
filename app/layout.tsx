@@ -1,4 +1,3 @@
-import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import QueryProvider from "@providers/query-provider";
@@ -22,25 +21,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <QueryProvider>
-        <DbEventsProvider>
-          <UserProvider>
-            <html lang="en" suppressHydrationWarning>
-              <body className={inter.className}>
-                <ThemeProvider
-                  attribute="class"
-                  defaultTheme="system"
-                  enableSystem
-                >
-                  {children}
-                </ThemeProvider>
-                <Toaster />
-              </body>
-            </html>
-          </UserProvider>
-        </DbEventsProvider>
-      </QueryProvider>
-    </ClerkProvider>
+    <QueryProvider>
+      <DbEventsProvider>
+        <UserProvider>
+          <html lang="en" suppressHydrationWarning>
+            <body className={inter.className}>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+              >
+                {children}
+              </ThemeProvider>
+              <Toaster />
+            </body>
+          </html>
+        </UserProvider>
+      </DbEventsProvider>
+    </QueryProvider>
   );
 }

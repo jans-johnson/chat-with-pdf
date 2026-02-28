@@ -2,10 +2,9 @@ import { NextResponse } from "next/server";
 import {
   checkSubscription,
   ensureUserExists,
-  getUserMetadata,
   getUserSettings,
+  getDefaultUserId,
 } from "@lib/account";
-import { auth } from "@clerk/nextjs/server";
 import { db } from "@lib/db";
 import { eq, desc } from "drizzle-orm";
 import { chats } from "@lib/db/schema";
@@ -14,10 +13,7 @@ import { logger } from "@lib/logger";
 export const dynamic = "force-dynamic";
 
 export async function POST() {
-  const { userId } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const userId = await getDefaultUserId();
 
   try {
     await ensureUserExists();
@@ -27,9 +23,8 @@ export async function POST() {
       .where(eq(chats.userId, userId))
       .orderBy(desc(chats.createdAt));
     const hasValidSubscription = await checkSubscription();
-    const userMetadata = await getUserMetadata();
     const userSettings = await getUserSettings();
-    const isAdmin = userMetadata?.role === "admin";
+    const isAdmin = false;
     const safeChats = _chats.map((d) => ({
       ...d,
       createdAt: d.createdAt.toUTCString(),

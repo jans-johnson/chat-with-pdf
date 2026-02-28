@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { subscriptions } from "@/lib/db/schema";
 import { stripe } from "@/lib/stripe";
-import { currentUser } from "@clerk/nextjs/server";
+import { getDefaultUserId } from "@lib/account";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { logger } from "@lib/logger";
@@ -12,16 +12,13 @@ const returnUrl = process.env.NEXT_BASE_URL;
 const priceId = process.env.STRIPE_PRICE_ID;
 
 export async function GET() {
-  const user = await currentUser();
-  if (!user) {
-    return new NextResponse("unauthorized", { status: 401 });
-  }
+  const userId = await getDefaultUserId();
 
   try {
     const _userSubscriptions = await db
       .select()
       .from(subscriptions)
-      .where(eq(subscriptions.userId, user.id));
+      .where(eq(subscriptions.userId, userId));
 
     if (_userSubscriptions[0] && _userSubscriptions[0].stripeCustomerId) {
       const stripeSession = await stripe.billingPortal.sessions.create({
@@ -34,7 +31,6 @@ export async function GET() {
     const stripeSession = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
-      customer_email: user.emailAddresses[0].emailAddress,
       line_items: [
         {
           price: priceId,
@@ -44,13 +40,13 @@ export async function GET() {
       success_url: returnUrl,
       cancel_url: returnUrl,
       metadata: {
-        userId: user.id,
+        userId,
       },
     });
     return NextResponse.json({ url: stripeSession.url });
   } catch (err) {
     logger.error("Error when creating checkout session:", {
-      userId: user.id,
+      userId,
       error: err,
     });
     return new NextResponse("internal server error", { status: 500 });

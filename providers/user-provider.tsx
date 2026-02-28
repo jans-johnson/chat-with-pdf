@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useRef } from "react";
-import { useUser } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import { useAppStore } from "@store/app-store";
 
@@ -36,26 +35,20 @@ interface UserProviderProps {
 }
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  const { user, isLoaded } = useUser();
   const { initialize, initializeApiKeys } = useAppStore();
   const hasInitialized = useRef(false);
 
-  // Only initialize when user is loaded and authenticated
   const { data, isLoading, error } = useQuery({
-    queryKey: ["user-initialization", user?.id],
+    queryKey: ["user-initialization"],
     queryFn: initializeUser,
-    enabled: isLoaded && !!user?.id,
-    staleTime: Infinity, // Cache for the entire session
+    staleTime: Infinity,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
   useEffect(() => {
-    // Initialize API keys when user is loaded
-    if (isLoaded && user?.id) {
-      initializeApiKeys(user.id);
-    }
-  }, [isLoaded, initializeApiKeys]);
+    initializeApiKeys();
+  }, [initializeApiKeys]);
 
   useEffect(() => {
     if (data && !hasInitialized.current) {

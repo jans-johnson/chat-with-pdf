@@ -1,6 +1,5 @@
 "use server";
 
-import { auth, currentUser } from "@clerk/nextjs/server";
 import { and, eq, inArray } from "drizzle-orm";
 import { db } from "./db";
 import {
@@ -17,11 +16,15 @@ import { AppSettings, FeatureFlags } from "@types";
 import { logger } from "./logger";
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
+const DEFAULT_USER_ID = "default-user";
+
+export async function getDefaultUserId() {
+  return DEFAULT_USER_ID;
+}
 
 export async function checkSubscription() {
   try {
-    const { userId } = auth();
-    if (!userId) return false;
+    const userId = DEFAULT_USER_ID;
 
     const _subscriptions = await db
       .select()
@@ -46,15 +49,7 @@ export async function checkSubscription() {
 }
 
 export const getUserMetadata = async () => {
-  try {
-    const { sessionClaims } = auth();
-    return sessionClaims?.metadata;
-  } catch (err) {
-    logger.error("Error getting user metadata:", {
-      error: err,
-    });
-    return null;
-  }
+  return null;
 };
 
 export const getFeatureFlags = async (): Promise<Record<
@@ -62,9 +57,6 @@ export const getFeatureFlags = async (): Promise<Record<
   boolean
 > | null> => {
   try {
-    const { userId } = auth();
-    if (!userId) return null;
-
     const flags = await db.select().from(feature_flags);
     return flags.reduce((acc, curr) => {
       return {
@@ -85,9 +77,6 @@ export const getAppSettings = async (): Promise<Record<
   string
 > | null> => {
   try {
-    const { userId } = auth();
-    if (!userId) return null;
-
     const settings = await db.select().from(app_settings);
     return settings.reduce((acc, curr) => {
       return { ...acc, [curr.name as AppSettings]: curr.value };
@@ -102,34 +91,27 @@ export const getAppSettings = async (): Promise<Record<
 
 export const ensureUserExists = async () => {
   try {
-    const user = await currentUser();
-    if (!user) return null;
+    const userId = DEFAULT_USER_ID;
 
-    logger.debug("Ensuring user exists", {
-      userId: user.id,
-    });
+    logger.debug("Ensuring user exists", { userId });
 
-    // Check if user exists in our database
     const existingUser = await db
       .select()
       .from(users)
-      .where(eq(users.id, user.id));
+      .where(eq(users.id, userId));
 
     if (existingUser.length > 0) {
       return existingUser[0];
     }
 
-    // User doesn't exist, create them
-    logger.info("Creating user in database:", {
-      user: user.id,
-    });
+    logger.info("Creating default user in database");
 
     const newUser = await db
       .insert(users)
       .values({
-        id: user.id,
-        email: user.emailAddresses[0]?.emailAddress || "",
-        name: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User",
+        id: userId,
+        email: "user@local",
+        name: "User",
       })
       .returning();
 
@@ -139,27 +121,6 @@ export const ensureUserExists = async () => {
       messageCount: 0,
       freeChats: Number(settings?.free_chats || 0),
       freeMessages: Number(settings?.free_messages || 0),
-    });
-
-    const userChats = await db
-      .select()
-      .from(chats)
-      .where(eq(chats.userId, user.id));
-
-    const chatIds = userChats.map((chat) => chat.id);
-    const userMessages =
-      chatIds.length > 0
-        ? await db
-            .select()
-            .from(messages)
-            .where(
-              and(inArray(messages.chatId, chatIds), eq(messages.role, "user"))
-            )
-        : [];
-
-    await db.insert(user_settings).values({
-      userId: user.id,
-      messageCount: userMessages.length,
     });
 
     return newUser[0];
@@ -173,8 +134,7 @@ export const ensureUserExists = async () => {
 
 export const getUserSettings = async (): Promise<UserSettings | null> => {
   try {
-    const { userId } = auth();
-    if (!userId) return null;
+    const userId = DEFAULT_USER_ID;
 
     const settings = await db
       .select()
@@ -192,8 +152,7 @@ export const getUserSettings = async (): Promise<UserSettings | null> => {
 
 export const updateUserSettings = async (settings: Partial<UserSettings>) => {
   try {
-    const { userId } = auth();
-    if (!userId) return;
+    const userId = DEFAULT_USER_ID;
 
     await db
       .update(user_settings)

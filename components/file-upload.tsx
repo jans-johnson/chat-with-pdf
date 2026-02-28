@@ -4,7 +4,6 @@ import axios from "axios";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import toast from "react-hot-toast";
-import { uploadToS3 } from "@/lib/s3";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { logger } from "@lib/logger";
@@ -57,7 +56,17 @@ const FileUpload = () => {
       } else {
         try {
           setIsUploading(true);
-          const data = await uploadToS3(file);
+          const formData = new FormData();
+          formData.append("file", file);
+          const res = await fetch("/api/upload-file", {
+            method: "POST",
+            body: formData,
+          });
+          if (!res.ok) {
+            toast.error("Something went wrong");
+            return;
+          }
+          const data = await res.json();
           if (!data?.file_key || !data.file_name) {
             toast.error("Something went wrong");
             return;

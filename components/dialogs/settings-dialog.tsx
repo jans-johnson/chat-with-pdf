@@ -16,14 +16,12 @@ import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import ContactButton from "../contact-button";
 import { useAppStore, ApiKeys } from "@/store/app-store";
-import { useUser } from "@clerk/nextjs";
 import toast from "react-hot-toast";
 import { logger } from "@lib/logger";
 import { Providers } from "@types";
 
 export default function SettingsDialog() {
   const { apiKeys, setApiKeys } = useAppStore();
-  const { user } = useUser();
   const [formData, setFormData] = useState<ApiKeys>({});
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -43,11 +41,6 @@ export default function SettingsDialog() {
   };
 
   const handleSave = () => {
-    if (!user?.id) {
-      toast.error("User not authenticated");
-      return;
-    }
-
     setIsSaving(true);
     try {
       // Filter out empty strings and set only non-empty values
@@ -58,7 +51,7 @@ export default function SettingsDialog() {
         }
       });
 
-      setApiKeys(filteredApiKeys, user.id);
+      setApiKeys(filteredApiKeys);
       toast.success("API keys added successfully");
     } catch (error) {
       logger.error("Error saving API keys:", error);

@@ -5,9 +5,8 @@ import {
   user_settings,
 } from "@/lib/db/schema";
 import { retrieval } from "@/lib/langchain";
-import { getUserSettings, updateUserSettings } from "@lib/account";
+import { getUserSettings, updateUserSettings, getDefaultUserId } from "@lib/account";
 import { Message } from "ai";
-import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { VALID_MODELS } from "@/constants/models";
@@ -30,10 +29,7 @@ const formatMessages = (messages: Message[]) => {
 
 export async function POST(req: Request) {
   try {
-    const { userId } = auth();
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const userId = await getDefaultUserId();
 
     const {
       messages,

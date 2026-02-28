@@ -77,8 +77,8 @@ type AppStore = {
   setCurrentChatId: (currentChatId: string) => void;
   updateMessageCount: (type: "increase" | "decrease", by: number) => void;
   setSelectedModel: (model: string) => void;
-  setApiKeys: (apiKeys: ApiKeys, userId?: string) => void;
-  initializeApiKeys: (userId: string) => void;
+  setApiKeys: (apiKeys: ApiKeys) => void;
+  initializeApiKeys: () => void;
   initialize: (data: any) => void;
 };
 
@@ -126,15 +126,12 @@ export const useAppStore = create<AppStore>()(
               : state.messageCount - by,
         })),
       setSelectedModel: (model) => set({ selectedModel: model }),
-      setApiKeys: (apiKeys, userId) => {
-        if (userId) {
-          saveApiKeysToStorage(apiKeys, userId);
-        }
+      setApiKeys: (apiKeys) => {
+        saveApiKeysToStorage(apiKeys, "default-user");
         set({ apiKeys });
       },
-      initializeApiKeys: (userId) => {
-        if (!userId) return;
-        const storedApiKeys = loadApiKeysFromStorage(userId);
+      initializeApiKeys: () => {
+        const storedApiKeys = loadApiKeysFromStorage("default-user");
         set({ apiKeys: storedApiKeys });
       },
       initialize: (data) => set({ ...data }),

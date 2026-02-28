@@ -1,5 +1,5 @@
 import { Pinecone, PineconeRecord } from "@pinecone-database/pinecone";
-import { downloadFromS3 } from "./s3-server";
+import { getLocalFilePath } from "./local-storage";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import md5 from "md5";
@@ -36,16 +36,13 @@ type RecordMetadata = {
   preview: string;
 };
 
-export async function loadS3IntoPinecone(fileKey: string) {
+export async function loadFileIntoPinecone(fileKey: string) {
   try {
-    // 1. obtain the pdf
-    logger.debug("Downloading s3 into file system");
-    const fileName = await downloadFromS3(fileKey);
-    if (!fileName) {
-      throw new Error("Could not download from s3: " + fileKey);
-    }
+    // 1. obtain the pdf from local storage
+    logger.debug("Loading local file into pinecone");
+    const filePath = getLocalFilePath(fileKey);
 
-    const loader = new PDFLoader(fileName);
+    const loader = new PDFLoader(filePath);
     const pages = (await loader.load()) as PDFPage[];
 
     // 2. Split and segment the pdf into smaller documents

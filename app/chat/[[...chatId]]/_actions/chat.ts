@@ -1,14 +1,11 @@
-import { auth } from "@clerk/nextjs/server";
+import { getDefaultUserId } from "@lib/account";
 import { db } from "@lib/db";
 import { SafeChat, chats } from "@lib/db/schema";
 import { eq } from "drizzle-orm";
 
 export const getChats = async (): Promise<SafeChat[]> => {
   try {
-    const { userId } = auth();
-    if (!userId) {
-      return [];
-    }
+    const userId = await getDefaultUserId();
 
     const _chats = (
       await db.select().from(chats).where(eq(chats.userId, userId))
@@ -21,11 +18,6 @@ export const getChats = async (): Promise<SafeChat[]> => {
 
 export const getChat = async (chatId: string): Promise<SafeChat | null> => {
   try {
-    const { userId } = auth();
-    if (!userId) {
-      return null;
-    }
-
     const chat = await db.select().from(chats).where(eq(chats.id, chatId));
     return chat[0]
       ? { ...chat[0], createdAt: chat[0].createdAt.toUTCString() }

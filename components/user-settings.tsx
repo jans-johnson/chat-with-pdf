@@ -1,6 +1,5 @@
 "use client";
 
-import { useUser, UserButton } from "@clerk/nextjs";
 import UsageInfo from "./usage-info";
 import { useAppStore } from "@store/app-store";
 import { useUserInitialization } from "@providers/user-provider";
@@ -9,7 +8,6 @@ import SettingsDialog from "./dialogs/settings-dialog";
 interface UserSettingsProps {}
 
 const UserSettings = ({}: UserSettingsProps) => {
-  const { user } = useUser();
   const { isUsageRestricted, messageCount, fileCount } = useAppStore();
   const { isInitialized } = useUserInitialization();
 
@@ -24,10 +22,7 @@ const UserSettings = ({}: UserSettingsProps) => {
       )}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <UserButton />
-          <p className="text-neutral-900 dark:text-neutral-400">
-            {user?.fullName}
-          </p>
+          <p className="text-neutral-900 dark:text-neutral-400">User</p>
         </div>
         <SettingsDialog />
       </div>

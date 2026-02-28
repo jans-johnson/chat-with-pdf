@@ -34,7 +34,14 @@ const log = (
   extra?: any
 ) => {
   if (env === "production") {
-    Sentry.logger[level](message, extra);
+    if (level === "error" || level === "fatal") {
+      Sentry.captureException(new Error(message), { extra });
+    } else {
+      Sentry.captureMessage(message, {
+        level: level === "debug" ? "debug" : level === "warn" ? "warning" : "info",
+        extra,
+      });
+    }
   } else {
     const consoleMethod = level === "fatal" ? "error" : level;
     (console as any)[consoleMethod](message, extra || "");
