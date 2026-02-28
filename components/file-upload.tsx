@@ -104,13 +104,13 @@ const FileUpload = () => {
   });
 
   return (
-    <div className="w-1/2 bg-neutral-50 dark:bg-neutral-900 rounded-xl p-5">
+    <div className="w-1/2 bg-neutral-50 dark:bg-white/5 dark:backdrop-blur-xl dark:border dark:border-white/10 rounded-xl p-5">
       <div
         {...getRootProps({
           className: cn(
-            "border-dashed border-2 rounded-xl cursor-pointer p-5 py-8 flex justify-center items-center flex-col dark:border-neutral-500",
+            "border-dashed border-2 rounded-xl cursor-pointer p-5 py-8 flex justify-center items-center flex-col border-neutral-300 dark:border-white/10 hover:dark:border-emerald-500/30 transition-colors",
             {
-              "bg-neutral-100 dark:bg-neutral-800": isDragActive,
+              "bg-neutral-100 dark:bg-emerald-500/5": isDragActive,
               "cursor-not-allowed": isPending || isUploading,
             }
           ),
@@ -120,7 +120,7 @@ const FileUpload = () => {
         {isPending || isUploading ? (
           <>
             <FileUploadIcon size={85} />
-            <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-200 mt-4">
+            <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-300 mt-4">
               Spilling tea to AI...
             </p>
           </>
@@ -132,13 +132,13 @@ const FileUpload = () => {
                 "opacity-50": isDragActive,
               })}
             />
-            <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-200 mt-4">
+            <p className="text-lg font-semibold text-neutral-900 dark:text-neutral-300 mt-4">
               {isDragActive
                 ? "Drop your file here"
                 : "Drag and drop your file here or click to select file"}
             </p>
             <div className="flex gap-2 mt-2 text-sm">
-              <p className="text-neutral-400 dark:text-neutral-500 border-r-2 border-neutral-300 dark:border-neutral-700 pr-2">
+              <p className="text-neutral-400 dark:text-neutral-500 border-r-2 border-neutral-300 dark:border-white/10 pr-2">
                 Supported file types: PDF
               </p>
               <p className="text-neutral-400 dark:text-neutral-500">

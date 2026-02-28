@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
 import QueryProvider from "@providers/query-provider";
 import { Toaster } from "react-hot-toast";
 import { DbEventsProvider } from "@providers/db-events-provider";
@@ -8,11 +8,9 @@ import { ThemeProvider } from "next-themes";
 
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
-  title: "AskPDF",
-  description: "Get insights from PDF documents",
+  title: "PdfWizard",
+  description: "Chat with your PDF documents using AI",
 };
 
 export default function RootLayout({
@@ -25,10 +23,10 @@ export default function RootLayout({
       <DbEventsProvider>
         <UserProvider>
           <html lang="en" suppressHydrationWarning>
-            <body className={inter.className}>
+            <body className={GeistSans.className}>
               <ThemeProvider
                 attribute="class"
-                defaultTheme="system"
+                defaultTheme="dark"
                 enableSystem
               >
                 {children}

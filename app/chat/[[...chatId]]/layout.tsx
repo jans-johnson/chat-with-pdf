@@ -7,7 +7,7 @@ export default function ChatLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="w-screen h-screen flex flex-col bg-purple-custom-50 dark:bg-neutral-950">
+    <div className="w-screen h-screen flex flex-col bg-neutral-100 dark:bg-[#0a0a0a]">
       <Header />
       <main className="w-full h-full flex gap-1 p-2">
         <ChatSideBar />

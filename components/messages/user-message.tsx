@@ -21,7 +21,7 @@ const UserMessage: FunctionComponent<UserMessageProps> = ({
     <div className="flex justify-end relative group pb-7">
       <div
         className={cn(
-          "flex flex-col gap-2 rounded-md px-3 py-1.5 relative bg-purple-custom-200 dark:bg-purple-custom-800 dark:text-neutral-200"
+          "flex flex-col gap-2 rounded-md px-3 py-1.5 relative bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-100 border border-emerald-200 dark:border-emerald-900"
         )}
       >
         <p>{message.content}</p>

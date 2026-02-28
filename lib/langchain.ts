@@ -104,8 +104,11 @@ function createChatModel(
       }
       let temperature: number | undefined = 0;
       if (
+        modelName === OPENAI_MODELS.GPT_5_2 ||
         modelName === OPENAI_MODELS.GPT_5 ||
-        modelName === OPENAI_MODELS.GPT_5_MINI
+        modelName === OPENAI_MODELS.GPT_5_MINI ||
+        modelName === OPENAI_MODELS.O3 ||
+        modelName === OPENAI_MODELS.O4_MINI
       ) {
         temperature = undefined;
       }

@@ -81,7 +81,7 @@ const ModelSelector = ({ className }: ModelSelectorProps) => {
                         <div className="flex items-center gap-2">
                           <span className="font-medium">{option.label}</span>
                           {isProModel && (
-                            <span className="text-xs px-1.5 py-0.5 bg-purple-custom-300 dark:bg-purple-custom-800 rounded-full text-neutral-900 dark:text-neutral-200">
+                            <span className="text-xs px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-500/20 rounded-full text-emerald-700 dark:text-emerald-400">
                               {option.modelType}
                             </span>
                           )}

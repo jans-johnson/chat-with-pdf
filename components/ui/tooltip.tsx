@@ -46,7 +46,7 @@ const TooltipIcon = ({
         <TooltipTrigger>
           <div
             className={cn(
-              "h-8 w-8 rounded-full hover:bg-purple-custom-300/50 dark:hover:bg-neutral-800 transition-colors flex items-center justify-center",
+              "h-8 w-8 rounded-full hover:bg-emerald-100 dark:hover:bg-emerald-500/10 transition-colors flex items-center justify-center",
               className
             )}
           >

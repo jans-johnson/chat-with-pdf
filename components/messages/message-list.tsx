@@ -51,7 +51,7 @@ const MessageList: FunctionComponent<MessageListProps> = ({
       <div className="h-full flex justify-center items-center">
         <Loader2
           size={30}
-          className="text-neutral-400 dark:text-neutral-600 animate-spin"
+          className="text-neutral-400 dark:text-neutral-500 animate-spin"
         />
       </div>
     );
@@ -117,11 +117,11 @@ const MessageList: FunctionComponent<MessageListProps> = ({
           <div className="flex flex-col items-end gap-2 rounded-md px-3 py-1.5">
             <div className="flex items-center gap-2">
               <div className="flex space-x-1">
-                <div className="w-1 h-1 bg-neutral-500 dark:bg-neutral-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                <div className="w-1 h-1 bg-neutral-500 dark:bg-neutral-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                <div className="w-1 h-1 bg-neutral-500 dark:bg-neutral-400 rounded-full animate-bounce"></div>
+                <div className="w-1 h-1 bg-neutral-400 dark:bg-emerald-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                <div className="w-1 h-1 bg-neutral-400 dark:bg-emerald-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                <div className="w-1 h-1 bg-neutral-400 dark:bg-emerald-400 rounded-full animate-bounce"></div>
               </div>
-              <span className="text-sm text-neutral-500 dark:text-neutral-400">
+              <span className="text-sm text-neutral-500 dark:text-emerald-400/70">
                 AI is thinking
               </span>
             </div>

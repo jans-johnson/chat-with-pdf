@@ -52,12 +52,12 @@ const LimitReachedDialog = ({
               </p>
               <p>
                 Thank you for your interest in the product. You can continue
-                using AskPDF by adding your own API keys in the settings.
+                using PdfWizard by adding your own API keys in the settings.
               </p>
-              <div className="flex items-start gap-2 p-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
+              <div className="flex items-start gap-2 p-3 bg-neutral-50 dark:bg-white/5 border border-neutral-200 dark:border-white/10 rounded-lg">
                 <Mail
                   size={26}
-                  className="mt-0.5 h-auto text-purple-custom-500"
+                  className="mt-0.5 h-auto text-emerald-500 dark:text-emerald-400"
                 />
                 <span className="text-sm">
                   If you have any questions, contact me through the contact

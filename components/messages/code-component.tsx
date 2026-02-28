@@ -135,7 +135,7 @@ export const CodeComponent = ({ className, children, ...props }: any) => {
   // For inline code, just return a simple styled span
   return (
     <code
-      className="bg-gray-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded text-sm font-mono"
+      className="bg-gray-100 dark:bg-white/10 px-1.5 py-0.5 rounded text-sm font-mono"
       {...props}
     >
       {children}

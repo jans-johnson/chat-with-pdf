@@ -12,7 +12,7 @@ const UserSettings = ({}: UserSettingsProps) => {
   const { isInitialized } = useUserInitialization();
 
   return (
-    <div className="flex flex-col gap-5 dark:border-neutral-700">
+    <div className="flex flex-col gap-5 dark:border-white/10">
       {isInitialized && (
         <UsageInfo
           isUsageRestricted={isUsageRestricted}
@@ -22,7 +22,7 @@ const UserSettings = ({}: UserSettingsProps) => {
       )}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <p className="text-neutral-900 dark:text-neutral-400">User</p>
+          <p className="text-neutral-700 dark:text-neutral-400">User</p>
         </div>
         <SettingsDialog />
       </div>

@@ -37,6 +37,7 @@
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.18",
     "drizzle-orm": "^0.28.6",
+    "geist": "^1.7.0",
     "langchain": "^0.3.31",
     "lodash": "^4.17.21",
     "lucide-react": "^0.287.0",

@@ -35,7 +35,7 @@ const UsageInfo = ({
   return (
     <>
       {isUsageRestricted && (
-        <div className="flex flex-col items-center gap-3 p-3 bg-purple-custom-300/60 dark:bg-neutral-800 rounded-md">
+        <div className="flex flex-col items-center gap-3 p-3 bg-emerald-50 dark:bg-white/5 border border-emerald-200 dark:border-white/10 rounded-md">
           <div className="flex items-center gap-1 text-neutral-700 dark:text-neutral-300">
             <p className="uppercase text-[11px] font-semibold tracking-wide">
               Beta usage
@@ -48,14 +48,14 @@ const UsageInfo = ({
           </div>
 
           <div className="w-full flex gap-2 text-sm text-neutral-700 dark:text-neutral-300">
-            <div className="w-full p-2 px-3.5 bg-white dark:bg-neutral-700 rounded-md shadow">
+            <div className="w-full p-2 px-3.5 bg-white dark:bg-white/5 rounded-md shadow">
               <p className="">Files</p>
               <p>
                 <span className="text-lg font-semibold">{chatCount}</span>/
                 {chatLimit}
               </p>
             </div>
-            <div className="w-full p-2 px-3.5 bg-white dark:bg-neutral-700 rounded-md shadow">
+            <div className="w-full p-2 px-3.5 bg-white dark:bg-white/5 rounded-md shadow">
               <p>Messages</p>
               <p>
                 <span className="text-lg font-semibold">{messageCount}</span>/
@@ -82,7 +82,7 @@ const UsageInfo = ({
             <DialogDescription className="text-left space-y-3 pt-2">
               <p>
                 You&apos;re currently using the{" "}
-                <span className="font-semibold">beta version</span> of AskPDF.
+                <span className="font-semibold">beta version</span> of PdfWizard.
                 During the beta period, usage is limited to help manage server
                 resources and gather feedback.
               </p>

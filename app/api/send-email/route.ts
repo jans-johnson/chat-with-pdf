@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     }
 
     const { data, error } = await resend.emails.send({
-      from: "AskPDF <onboarding@resend.dev>",
+      from: "PdfWizard <onboarding@resend.dev>",
       to: MY_EMAIL,
       replyTo: email,
       subject: `New message from ${name ?? email}`,

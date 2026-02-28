@@ -36,7 +36,7 @@ const TooltipButton: FunctionComponent<
             <Icon
               size={15}
               className={cn(
-                "text-neutral-400 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-300",
+                "text-neutral-400 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-emerald-400",
                 iconClassName
               )}
             />

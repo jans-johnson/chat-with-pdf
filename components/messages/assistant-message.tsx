@@ -52,7 +52,7 @@ const AssistantMessage: FunctionComponent<AssistantMessageProps> = ({
 
   const getModelInfo = (model: string | undefined) => {
     const modelInfo = {
-      name: "AskPDF Assistant",
+      name: "PdfWizard Assistant",
       icon: <AskPdfIcon size={17} />,
     };
     if (!model) {

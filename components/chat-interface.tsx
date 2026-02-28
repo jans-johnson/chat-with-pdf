@@ -159,7 +159,7 @@ const ChatInterface: FunctionComponent<ChatInterfaceProps> = ({
 
   return (
     <>
-      <div className="relative w-full h-[calc(100vh-72px)] flex flex-col justify-between bg-neutral-50 dark:bg-neutral-900 rounded-md">
+      <div className="relative w-full h-[calc(100vh-72px)] flex flex-col justify-between bg-neutral-50 dark:bg-[#0a0a0a] rounded-md">
         <MessageList
           messages={messages}
           isLoading={query.isLoading}
@@ -171,11 +171,11 @@ const ChatInterface: FunctionComponent<ChatInterfaceProps> = ({
           pdfName={currentChat.pdfName}
         />
         <form
-          className={`flex gap-3 bg-neutral-50 dark:bg-neutral-900 px-3 pt-1 pb-5`}
+          className={`flex gap-3 bg-neutral-50 dark:bg-[#0a0a0a] px-3 pt-1 pb-5`}
           onSubmit={onSubmit}
         >
           {/* Chat input container */}
-          <div className="flex flex-col items-end w-full border border-neutral-300 dark:border-neutral-700 rounded-lg">
+          <div className="flex flex-col items-end w-full border border-neutral-300 dark:border-white/10 dark:bg-white/5 dark:backdrop-blur rounded-lg">
             <Textarea
               value={input}
               placeholder="Ask any question..."

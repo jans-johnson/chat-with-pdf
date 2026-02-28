@@ -7,9 +7,9 @@ const ChatLoading = () => {
       <div className="flex flex-col items-center justify-center">
         <Loader2
           size={32}
-          className="animate-spin text-neutral-300 dark:text-neutral-600"
+          className="animate-spin text-neutral-400 dark:text-emerald-500/50"
         />
-        <p className="mt-4 text-sm text-neutral-500">Loading chat...</p>
+        <p className="mt-4 text-sm text-neutral-500 dark:text-neutral-500">Loading chat...</p>
       </div>
     </div>
   );

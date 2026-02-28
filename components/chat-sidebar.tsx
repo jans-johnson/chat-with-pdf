@@ -95,12 +95,12 @@ const ChatSideBar = ({}: ChatSideBarProps) => {
   };
 
   return (
-    <div className="w-72 h-full shrink-0 bg-neutral-50 dark:bg-neutral-900 px-4 py-5 flex flex-col justify-between rounded-md mr-1">
+    <div className="w-72 h-full shrink-0 bg-neutral-50 dark:bg-[#0f0f0f] border-r border-neutral-200 dark:border-white/5 px-4 py-5 flex flex-col justify-between rounded-md mr-1">
       <div>
         <NewChatButton onClick={handleNewChat} disabled={isInitializing} />
         {isInitializing ? (
           <div className="flex justify-center items-center w-full mt-5">
-            <Loader2 className="text-neutral-400 dark:text-neutral-600 animate-spin" />
+            <Loader2 className="text-neutral-400 dark:text-neutral-500 animate-spin" />
           </div>
         ) : (
           <div className="w-full mt-3 flex flex-col gap-2">
@@ -110,13 +110,13 @@ const ChatSideBar = ({}: ChatSideBarProps) => {
                 <li
                   key={chat.id}
                   className={cn(
-                    "w-full group flex justify-between gap-2 items-center p-3 rounded-md text-neutral-500",
+                    "w-full group flex justify-between gap-2 items-center p-3 rounded-md text-neutral-500 dark:text-neutral-400",
                     {
                       // Selected state
-                      "bg-purple-custom-50 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-300":
+                      "bg-emerald-50 text-emerald-700 border-l-2 border-emerald-500 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-l-2 dark:border-emerald-500":
                         selected,
                       // Normal hover state (only when not deleting)
-                      "cursor-pointer hover:bg-purple-custom-50 hover:text-neutral-800 dark:hover:bg-neutral-800 dark:hover:text-neutral-300":
+                      "cursor-pointer hover:bg-neutral-100 hover:text-neutral-800 dark:hover:bg-white/5 dark:hover:text-neutral-300":
                         !(isPending && removingChatId === chat.id),
                       // Deleting state
                       "animate-pulse cursor-not-allowed":
@@ -138,7 +138,7 @@ const ChatSideBar = ({}: ChatSideBarProps) => {
                     <Button
                       variant="ghost"
                       className={cn(
-                        "group-hover:block hidden h-fit shrink-0 p-1 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-300",
+                        "group-hover:block hidden h-fit shrink-0 p-1 text-neutral-500 hover:text-red-500 dark:hover:text-red-400",
                         {
                           "group-hover:hidden":
                             isPending && removingChatId === chat.id,
@@ -212,7 +212,7 @@ const NewChatButton = ({ onClick, disabled }: NewChatButtonProps) => {
   return (
     <Button
       variant="outline"
-      className="w-full bg-transparent border-neutral-300 dark:border-neutral-700"
+      className="w-full bg-transparent border-emerald-300 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-500/30 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
       onClick={onClick}
       disabled={disabled}
     >

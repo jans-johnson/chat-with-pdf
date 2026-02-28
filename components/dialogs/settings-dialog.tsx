@@ -113,7 +113,7 @@ export default function SettingsDialog() {
             onChange={(value) => handleInputChange(Providers.DeepSeek, value)}
           />
           <div className="flex flex-col gap-2 mt-2">
-            <Button onClick={handleSave} disabled={isSaving}>
+            <Button onClick={handleSave} disabled={isSaving} className="bg-emerald-500 text-black font-medium hover:bg-emerald-400">
               {isSaving ? "Saving..." : "Save"}
             </Button>
             <div className="flex items-center justify-center">

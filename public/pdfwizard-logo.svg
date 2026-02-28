@@ -1,0 +1,14 @@
+<svg width="220" height="44" viewBox="0 0 220 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Wizard hat icon -->
+  <path d="M18 6L8 34H28L18 6Z" fill="#10b981" opacity="0.9"/>
+  <path d="M18 6L14 18L22 18L18 6Z" fill="#34d399"/>
+  <circle cx="18" cy="12" r="1.5" fill="white" opacity="0.8"/>
+  <path d="M5 34H31" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M8 34C8 34 10 30 18 30C26 30 28 34 28 34" fill="#064e3b" opacity="0.3"/>
+  <!-- Sparkle -->
+  <path d="M30 8L31 11L34 12L31 13L30 16L29 13L26 12L29 11L30 8Z" fill="#34d399" opacity="0.7"/>
+  <!-- Text: PdfWizard -->
+  <text x="42" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="600" fill="currentColor">
+    <tspan fill="#10b981">Pdf</tspan><tspan fill="currentColor">Wizard</tspan>
+  </text>
+</svg>

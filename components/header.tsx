@@ -14,16 +14,16 @@ const Header = () => {
   };
 
   return (
-    <header className="w-full flex h-14 items-center justify-between px-6 bg-neutral-50 dark:bg-neutral-900 shrink-0">
+    <header className="w-full flex h-14 items-center justify-between px-6 bg-white/80 dark:bg-black/50 backdrop-blur-xl border-b border-neutral-200 dark:border-white/5 shrink-0">
       {/* Logo and Brand */}
       <Link href="/" className="flex items-center space-x-2">
         <Image
-          src="/askpdf-logo.svg"
-          alt="AskPDF Logo"
-          width={100}
-          height={100}
+          src="/pdfwizard-logo.svg"
+          alt="PdfWizard Logo"
+          width={160}
+          height={44}
           priority={false}
-          className="w-[120px] h-auto"
+          className="w-[140px] h-auto"
         />
       </Link>
 

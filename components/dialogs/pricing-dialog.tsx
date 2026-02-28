@@ -21,7 +21,7 @@ const pricingDetails = [
     planName: "Free" as PlanName,
     price: 0,
     description: {
-      title: "For people just getting started with AskPDF",
+      title: "For people just getting started with PdfWizard",
       items: ["Limited PDF files", "Limited generations"],
     },
   },
@@ -55,7 +55,7 @@ const PricingDialog: FunctionComponent<PricingDialogProps> = () => {
         <Button className="w-full">
           <Crown
             size={20}
-            className="text-neutral-300 dark:text-neutral-900 mr-2"
+            className="text-emerald-700 dark:text-emerald-300 mr-2"
           />
           Upgrade to Pro
         </Button>
@@ -100,7 +100,7 @@ const PricingOption = ({
   onClick,
 }: PricingOptionProps) => {
   return (
-    <div className="flex flex-col w-64 gap-4 dark:text-neutral-300 text-neutral-700">
+    <div className="flex flex-col w-64 gap-4 dark:text-neutral-300 text-neutral-700 p-4 rounded-xl bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10">
       <div>
         <p className="font-semibold dark:text-neutral-100 text-neutral-900">
           {planName}
@@ -109,6 +109,7 @@ const PricingOption = ({
       </div>
       <Button
         disabled={planName === "Free" || loading}
+        className={planName === "Pro" ? "bg-emerald-500 text-black font-medium hover:bg-emerald-400" : ""}
         onClick={() => {
           if (planName === "Pro") {
             onClick();
