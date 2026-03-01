@@ -1,25 +1,15 @@
 "use client";
 
-import UsageInfo from "./usage-info";
-import { useAppStore } from "@store/app-store";
 import { useUserInitialization } from "@providers/user-provider";
 import SettingsDialog from "./dialogs/settings-dialog";
 
 interface UserSettingsProps {}
 
 const UserSettings = ({}: UserSettingsProps) => {
-  const { isUsageRestricted, messageCount, fileCount } = useAppStore();
   const { isInitialized } = useUserInitialization();
 
   return (
     <div className="flex flex-col gap-5 dark:border-white/10">
-      {isInitialized && (
-        <UsageInfo
-          isUsageRestricted={isUsageRestricted}
-          messageCount={messageCount}
-          chatCount={fileCount}
-        />
-      )}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <p className="text-neutral-700 dark:text-neutral-400">User</p>

@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { SafeChat } from "@lib/db/schema";
-import { createComputed } from "zustand-computed";
 import { DEFAULT_MODEL } from "@/constants/models";
 import { ApiKeys } from "@/types";
 import { encryptData, decryptData, isCryptoAvailable } from "@/lib/crypto";
@@ -66,10 +65,6 @@ type AppStore = {
   chats: SafeChat[];
   currentChatId: string;
   messageCount: number;
-  isSubscribed: boolean;
-  isAdmin: boolean;
-  freeChats: number;
-  freeMessages: number;
   selectedModel: string;
   apiKeys: ApiKeys;
   addChat: (chat: SafeChat) => void;
@@ -82,31 +77,14 @@ type AppStore = {
   initialize: (data: any) => void;
 };
 
-type ComputedStore = {
-  fileCount: number;
-  isUsageRestricted: boolean;
-};
-
-const computed = createComputed(
-  (state: AppStore): ComputedStore => ({
-    fileCount: state.chats.length,
-    isUsageRestricted: !state.isSubscribed && !state.isAdmin,
-  })
-);
-
 export const useAppStore = create<AppStore>()(
   devtools(
-    computed((set) => ({
+    (set) => ({
       chats: [],
       currentChatId: "",
       messageCount: 0,
-      isSubscribed: false,
-      isAdmin: false,
-      freeChats: 0,
-      freeMessages: 0,
       selectedModel: DEFAULT_MODEL,
       apiKeys: {},
-      userId: "",
       addChat: (chat) =>
         set((state) => {
           const newChats = [chat, ...state.chats];
@@ -135,10 +113,9 @@ export const useAppStore = create<AppStore>()(
         set({ apiKeys: storedApiKeys });
       },
       initialize: (data) => set({ ...data }),
-    })),
+    }),
     {
       name: "app-store",
-      enabled: process.env.NODE_ENV !== "production",
     }
   )
 );

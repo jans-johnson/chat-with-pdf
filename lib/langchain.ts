@@ -59,33 +59,22 @@ function getModelProvider(modelName: string): string {
   return "unknown";
 }
 
-function getModelName(messageCount: number, isAdmin: boolean): string {
-  return isAdmin
-    ? defaultModel
-    : messageCount < 20
-      ? defaultModel
-      : alternativeModel;
-}
-
 function validateAndGetModel(
   selectedModel?: string,
-  messageCount?: number,
-  isAdmin?: boolean
 ): string {
   // If a specific model is selected, validate it
   if (selectedModel && VALID_MODELS.includes(selectedModel)) {
     return selectedModel;
   }
 
-  // If selected model is invalid, log warning and fallback to default logic
+  // If selected model is invalid, log warning and fallback to default
   if (selectedModel && !VALID_MODELS.includes(selectedModel)) {
     logger.warn(
       `Invalid model selected: ${selectedModel}. Falling back to default.`
     );
   }
 
-  // Use default model selection logic
-  return getModelName(messageCount || 0, isAdmin || false);
+  return defaultModel;
 }
 
 // Model factory function to create chat instances for different providers
@@ -174,21 +163,17 @@ function createChatModel(
 
 function createStreamingModel(
   selectedModel?: string,
-  messageCount?: number,
-  isAdmin?: boolean,
   apiKeys?: ApiKeys
 ) {
-  const modelName = validateAndGetModel(selectedModel, messageCount, isAdmin);
+  const modelName = validateAndGetModel(selectedModel);
   return createChatModel(modelName, true, apiKeys);
 }
 
 function createNonStreamingModel(
   selectedModel?: string,
-  messageCount?: number,
-  isAdmin?: boolean,
   apiKeys?: ApiKeys
 ) {
-  const modelName = validateAndGetModel(selectedModel, messageCount, isAdmin);
+  const modelName = validateAndGetModel(selectedModel);
   return createChatModel(modelName, false, apiKeys);
 }
 
@@ -197,7 +182,6 @@ type retrievalArgs = {
   chatHistory: string;
   previousMessages: string[];
   namespace: string;
-  isAdmin: boolean;
   selectedModel?: string;
   apiKeys?: ApiKeys;
   streamCallbacks: CallbackHandlerMethods;
@@ -216,7 +200,6 @@ export async function retrieval({
   chatHistory,
   previousMessages,
   namespace,
-  isAdmin,
   selectedModel,
   apiKeys,
   streamCallbacks,
@@ -230,7 +213,7 @@ export async function retrieval({
    */
   const standaloneQuestionChain = RunnableSequence.from([
     questionPrompt,
-    createNonStreamingModel(selectedModel, messageCount, isAdmin, apiKeys),
+    createNonStreamingModel(selectedModel, apiKeys),
     new StringOutputParser(),
   ]);
 
@@ -262,7 +245,7 @@ export async function retrieval({
       question: (input) => input.question,
     },
     answerPrompt,
-    createStreamingModel(selectedModel, messageCount, isAdmin, apiKeys),
+    createStreamingModel(selectedModel, apiKeys),
   ]);
 
   const conversationalRetrievalQAChain = RunnableSequence.from([

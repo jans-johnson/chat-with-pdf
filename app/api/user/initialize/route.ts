@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import {
-  checkSubscription,
   ensureUserExists,
-  getUserSettings,
   getDefaultUserId,
 } from "@lib/account";
 import { db } from "@lib/db";
@@ -22,9 +20,7 @@ export async function POST() {
       .from(chats)
       .where(eq(chats.userId, userId))
       .orderBy(desc(chats.createdAt));
-    const hasValidSubscription = await checkSubscription();
-    const userSettings = await getUserSettings();
-    const isAdmin = false;
+
     const safeChats = _chats.map((d) => ({
       ...d,
       createdAt: d.createdAt.toUTCString(),
@@ -32,11 +28,6 @@ export async function POST() {
 
     return NextResponse.json({
       chats: safeChats,
-      isSubscribed: hasValidSubscription,
-      isAdmin,
-      messageCount: userSettings?.messageCount || 0,
-      freeChats: userSettings?.freeChats || 0,
-      freeMessages: userSettings?.freeMessages || 0,
     });
   } catch (error) {
     logger.error("Error initializing user:", {

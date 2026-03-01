@@ -7,24 +7,18 @@ import toast from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { logger } from "@lib/logger";
-import LimitReachedDialog from "./dialogs/limit-reached-dialog";
 import { useAppStore } from "@store/app-store";
 import { SafeChat } from "@lib/db/schema";
-import { useDbEvents } from "@providers/db-events-provider";
 import { cn } from "@/lib/utils";
 import { PdfIcon } from "./icons/pdf-icon";
 import { FileUploadIcon } from "./icons/file-upload-icon";
 
 const FileUpload = () => {
   const router = useRouter();
-  const { settings } = useDbEvents();
-  const { freeChats, isUsageRestricted, fileCount, addChat } = useAppStore();
-
-  const chatLimit = freeChats || Number(settings?.free_chats);
+  const { addChat } = useAppStore();
 
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string>("");
-  const [showLimitDialog, setShowLimitDialog] = useState(false);
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (files: { file_key: string; file_name: string }[]) => {
@@ -35,11 +29,6 @@ const FileUpload = () => {
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
-      if (isUsageRestricted && fileCount === chatLimit) {
-        setShowLimitDialog(true);
-        return;
-      }
-
       // Validate all files
       for (const file of acceptedFiles) {
         if (file.size > 50 * 1024 * 1024) {
@@ -104,8 +93,7 @@ const FileUpload = () => {
         setUploadProgress("");
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [mutate, router, fileCount, chatLimit, isUsageRestricted]
+    [mutate, router]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -160,12 +148,6 @@ const FileUpload = () => {
             </div>
           </>
         )}
-
-        <LimitReachedDialog
-          type="file"
-          open={showLimitDialog}
-          setOpen={setShowLimitDialog}
-        />
       </div>
     </div>
   );

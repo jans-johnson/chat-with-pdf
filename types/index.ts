@@ -1,14 +1,5 @@
 export type { SafeChatFile } from "@/lib/db/schema";
 
-export enum FeatureFlags {
-  Billing = "billing",
-}
-
-export enum AppSettings {
-  FreeChats = "free_chats",
-  FreeMessages = "free_messages",
-}
-
 export enum Providers {
   OpenAI = "OpenAI",
   Anthropic = "Anthropic",

@@ -1,7 +1,3 @@
-import * as Sentry from "@sentry/nextjs";
-
-const env = process.env.NODE_ENV;
-
 export interface Logger {
   info(message: string, extra?: any): void;
   error(message: string, extra?: any): void;
@@ -12,38 +8,18 @@ export interface Logger {
 
 export const logger: Logger = {
   info(message, extra) {
-    log(message, "info", extra);
+    console.info(message, extra || "");
   },
   error(message, extra) {
-    log(message, "error", extra);
+    console.error(message, extra || "");
   },
   debug(message, extra) {
-    log(message, "debug", extra);
+    console.debug(message, extra || "");
   },
   warn(message, extra) {
-    log(message, "warn", extra);
+    console.warn(message, extra || "");
   },
   fatal(message, extra) {
-    log(message, "fatal", extra);
+    console.error(message, extra || "");
   },
-};
-
-const log = (
-  message: string,
-  level: "info" | "error" | "warn" | "fatal" | "debug",
-  extra?: any
-) => {
-  if (env === "production") {
-    if (level === "error" || level === "fatal") {
-      Sentry.captureException(new Error(message), { extra });
-    } else {
-      Sentry.captureMessage(message, {
-        level: level === "debug" ? "debug" : level === "warn" ? "warning" : "info",
-        extra,
-      });
-    }
-  } else {
-    const consoleMethod = level === "fatal" ? "error" : level;
-    (console as any)[consoleMethod](message, extra || "");
-  }
 };

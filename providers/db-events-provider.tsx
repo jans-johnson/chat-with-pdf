@@ -1,6 +1,6 @@
 "use client";
 
-import { getAppSettings, getFeatureFlags, getUserMetadata } from "@lib/account";
+import { getUserMetadata } from "@lib/account";
 import { logger } from "@lib/logger";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
@@ -43,12 +43,8 @@ export const DbEventsProvider = ({
 
   useEffect(() => {
     (async () => {
-      const flags = await getFeatureFlags();
-      const appSettings = await getAppSettings();
       const userMetadata = await getUserMetadata();
       setData({
-        ...(flags || {}),
-        ...(appSettings || {}),
         ...(userMetadata || {}),
       });
     })();

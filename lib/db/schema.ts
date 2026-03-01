@@ -26,8 +26,6 @@ export const user_settings = sqliteTable("user_settings", {
     .notNull()
     .references(() => users.id),
   messageCount: integer("message_count").notNull().default(0),
-  freeChats: integer("free_chats"),
-  freeMessages: integer("free_messages"),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .$defaultFn(() => new Date()),
@@ -90,19 +88,6 @@ export type SafeMessage = Omit<Message, "createdAt"> & {
   createdAt: string;
 };
 
-export const subscriptions = sqliteTable("subscriptions", {
-  id: text("id")
-    .notNull()
-    .$defaultFn(() => randomUUID()),
-  userId: text("user_id").notNull().unique(),
-  stripeCustomerId: text("stripe_customer_id").notNull().unique(),
-  stripeSubscriptionId: text("stripe_subscription_id").unique(),
-  stripePriceId: text("stripe_price_id"),
-  stripeCurrentPeriodEnd: integer("stripe_current_period_end", {
-    mode: "timestamp",
-  }),
-});
-
 export const sources = sqliteTable("sources", {
   id: text("id")
     .primaryKey()
@@ -121,22 +106,3 @@ export const sources = sqliteTable("sources", {
 export type SafeSource = Omit<typeof sources.$inferSelect, "createdAt"> & {
   createdAt: string;
 };
-
-export const feature_flags = sqliteTable("feature_flags", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => randomUUID()),
-  flag: text("flag").notNull(),
-  enabled: integer("enabled", { mode: "boolean" }).default(false),
-});
-
-export const app_settings = sqliteTable("app_settings", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => randomUUID()),
-  name: text("name").notNull(),
-  value: text("value").notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .$defaultFn(() => new Date()),
-});

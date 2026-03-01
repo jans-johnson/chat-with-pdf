@@ -7,10 +7,9 @@ import {
   chats,
 } from "@/lib/db/schema";
 import { retrieval } from "@/lib/langchain";
-import { getUserSettings, updateUserSettings, getDefaultUserId } from "@lib/account";
+import { getDefaultUserId } from "@lib/account";
 import { Message } from "ai";
 import { NextResponse } from "next/server";
-import * as Sentry from "@sentry/nextjs";
 import { VALID_MODELS } from "@/constants/models";
 import { logger } from "@lib/logger";
 import { eq } from "drizzle-orm";
@@ -37,23 +36,9 @@ export async function POST(req: Request) {
       messages,
       chatId,
       messageCount,
-      isAdmin,
       selectedModel,
       apiKeys,
     } = await req.json();
-
-    // Check if users running out of free messages
-    const userSettings = await getUserSettings();
-    if (
-      userSettings?.messageCount &&
-      userSettings?.freeMessages &&
-      userSettings?.messageCount >= userSettings?.freeMessages
-    ) {
-      return NextResponse.json(
-        { error: "Free messages limit reached" },
-        { status: 403 }
-      );
-    }
 
     // Determine the Pinecone namespace: use chatId if chat_files exist, else fall back to chats.fileKey
     const chatFilesRows = await db
@@ -89,7 +74,6 @@ export async function POST(req: Request) {
       chatHistory,
       previousMessages,
       namespace,
-      isAdmin,
       selectedModel: validatedModel,
       apiKeys,
       streamCallbacks: {
@@ -143,11 +127,8 @@ export async function POST(req: Request) {
     // Return a StreamingTextResponse, which can be consumed by the client
     return streamingtextResponse;
   } catch (err) {
-    Sentry.captureException("Error generating reply:", {
-      level: "error",
-      extra: {
-        error: err,
-      },
+    logger.error("Error generating reply:", {
+      error: err,
     });
     return NextResponse.json(
       { error: (err as Error).message },
